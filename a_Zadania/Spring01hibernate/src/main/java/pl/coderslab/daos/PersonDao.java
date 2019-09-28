@@ -1,7 +1,8 @@
 package pl.coderslab.daos;
 
 import org.springframework.stereotype.Repository;
-import pl.coderslab.entities.Author;
+import pl.coderslab.entities.Book;
+import pl.coderslab.entities.Person;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,30 +12,30 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class AuthorDao {
+public class PersonDao {
 
     @PersistenceContext
     EntityManager entityManager;
 
-    public void saveAuthor(Author entity) {
+    public void savePerson(Person entity) {
         entityManager.persist(entity);
     }
 
-    public Author findById(long id) {
-        return entityManager.find(Author.class, id);
+    public Person findById(long id) {
+        return entityManager.find(Person.class, id);
     }
 
-    public void update(Author entity) {
+    public void update(Person entity) {
         entityManager.merge(entity);
     }
 
-    public void delete(Author entity) {
+    public void delete(Person entity) {
         entityManager.remove(entityManager.contains(entity) ?
                 entity : entityManager.merge(entity));
     }
 
-    public List<Author> getAll() {
-        Query query = entityManager.createQuery("SELECT b FROM Book b");
+    public List<Person> getAll() {
+        Query query = entityManager.createQuery("SELECT b FROM Person b");
         return query.getResultList();
     }
 

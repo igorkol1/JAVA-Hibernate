@@ -1,10 +1,7 @@
 package pl.coderslab.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "authors")
@@ -15,6 +12,9 @@ public class Author {
     private Long id;
     private String firstName;
     private String lastName;
+
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "authors")
+    private List<Book> books;
 
     public Author() {
     }
