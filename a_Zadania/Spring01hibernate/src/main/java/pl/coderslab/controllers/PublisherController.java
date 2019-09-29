@@ -2,14 +2,22 @@ package pl.coderslab.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.coderslab.daos.PublisherDao;
+import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Publisher;
 import pl.coderslab.utils.RandomString;
 
+import java.util.List;
+
 @Controller
+@RequestMapping("/publisher")
 public class PublisherController {
 
     private PublisherDao publisherDao;
@@ -19,55 +27,57 @@ public class PublisherController {
         this.publisherDao = publisherDao;
     }
 
-    @GetMapping("/create-publisher")
-    @ResponseBody
-    public String createAuthor(){
-        Publisher newPublisher = generateRandomAuthor();
-        publisherDao.savePublisher(newPublisher);
-        return newPublisher.toString();
+    @GetMapping("/list")
+    public String authorList(){
+        return "publisherList";
     }
 
-    @GetMapping("/get-publisher/{id}")
-    @ResponseBody
-    public String getAuthor(@PathVariable String id){
-        Publisher publisher = publisherDao.findById(Long.parseLong(id));
-        if(publisher!=null){
-            return publisher.toString();
-        }else {
-            return "Not found publisher with id "+id;
-        }
+    @GetMapping("/create")
+    public String createAuthorForm(Model model){
+        Publisher publisher = new Publisher();
+        model.addAttribute("publisher",publisher);
+        return "publisherForm";
     }
 
-    @GetMapping("/edit-publisher/{id}")
-    @ResponseBody
-    public String updateAuthor(@PathVariable String id){
-        Publisher publisher = publisherDao.findById(Long.parseLong(id));
-        if(publisher!=null){
-            RandomString randomString = new RandomString(10);
-            publisher.setName(randomString.nextString());
-            publisherDao.update(publisher);
-            return publisher.toString();
-        }else {
-            return "Not found publisher with id "+id;
-        }
+    @PostMapping("/create")
+    public String createAuthor(@ModelAttribute Publisher publisher){
+        publisherDao.savePublisher(publisher);
+        return "redirect:/publisher/list";
     }
 
-    @GetMapping("/delete-publisher/{id}")
-    @ResponseBody
-    public String deleteAuthor(@PathVariable String id){
-        Publisher publisher = publisherDao.findById(Long.parseLong(id));
-        if(publisher!=null){
+    @GetMapping("/edit/{id}")
+    public String editAuthorForm(@PathVariable int id,Model model){
+        Publisher publisher = publisherDao.findById(id);
+        model.addAttribute("publisher",publisher);
+        return "publisherForm";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editAuthor(@ModelAttribute Publisher publisher){
+        publisherDao.update(publisher);
+        return "redirect:/publisher/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deletePublisherQuestion(@PathVariable int id, Model model){
+        Publisher publisher = publisherDao.findById(id);
+        model.addAttribute("publisher",publisher);
+        return "confirmationPublisher";
+    }
+
+    @GetMapping("/delete/{id}/yes")
+    public String deleteBook(@PathVariable int id){
+        Publisher publisher = publisherDao.findById(id);
+        if(publisher!=null) {
             publisherDao.delete(publisher);
-            return "Publisher deleted";
-        }else {
-            return "Not found publisher with id "+id;
         }
+        return "redirect:/publisher/list";
     }
 
-    private Publisher generateRandomAuthor(){
-        RandomString randomString = new RandomString(10);
-        Publisher publisher = new Publisher(randomString.nextString());
-        return publisher;
+
+    @ModelAttribute("publishers")
+    public List<Publisher> getAuthors(){
+        return publisherDao.getAll();
     }
 
 }

@@ -2,14 +2,16 @@ package pl.coderslab.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.daos.AuthorDao;
 import pl.coderslab.entities.Author;
 import pl.coderslab.utils.RandomString;
 
+import java.util.List;
+
 @Controller
+@RequestMapping("/authors")
 public class AuthorController {
 
     private AuthorDao authorDao;
@@ -19,57 +21,56 @@ public class AuthorController {
         this.authorDao = authorDao;
     }
 
-    @GetMapping("/create-author")
-    @ResponseBody
-    public String createAuthor(){
-        Author newAuthor = generateRandomAuthor();
-        authorDao.saveAuthor(newAuthor);
-        return newAuthor.toString();
+    @GetMapping("/create")
+    public String createAuthorForm(Model model){
+        Author author = new Author();
+        model.addAttribute("author",author);
+        return "authorForm";
     }
 
-    @GetMapping("/get-author/{id}")
-    @ResponseBody
-    public String getAuthor(@PathVariable String id){
-        Author author = authorDao.findById(Long.parseLong(id));
-        if(author!=null){
-            return author.toString();
-        }else {
-            return "Not found author with id "+id;
-        }
+    @PostMapping("/create")
+    public String createAuthor(@ModelAttribute Author author){
+        authorDao.saveAuthor(author);
+        return "redirect:/authors/list";
     }
 
-    @GetMapping("/edit-author/{id}")
-    @ResponseBody
-    public String updateAuthor(@PathVariable String id){
-        Author author = authorDao.findById(Long.parseLong(id));
-        if(author!=null){
-            RandomString randomString = new RandomString(10);
-            author.setFirstName(randomString.nextString());
-            author.setLastName(randomString.nextString());
-            authorDao.update(author);
-            return author.toString();
-        }else {
-            return "Not found author with id "+id;
-        }
+    @GetMapping("/list")
+    public String authorList(){
+        return "auhtorList";
     }
 
-    @GetMapping("/delete-author/{id}")
-    @ResponseBody
-    public String deleteAuthor(@PathVariable String id){
-        Author author = authorDao.findById(Long.parseLong(id));
-        if(author!=null){
+    @GetMapping("/edit/{id}")
+    public String editAuthorForm(@PathVariable int id,Model model){
+        Author author = authorDao.findById(id);
+        model.addAttribute("author",author);
+        return "authorForm";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editAuthor(@ModelAttribute Author author){
+        authorDao.update(author);
+        return "redirect:/authors/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteAuthorQuestion(@PathVariable int id, Model model){
+        Author author = authorDao.findById(id);
+        model.addAttribute("author",author);
+        return "confirmationAuthor";
+    }
+
+    @GetMapping("/delete/{id}/yes")
+    public String deleteBook(@PathVariable int id){
+        Author author = authorDao.findById(id);
+        if(author!=null) {
             authorDao.delete(author);
-            return "Author deleted";
-        }else {
-            return "Not found author with id "+id;
         }
+        return "redirect:/authors/list";
     }
 
-    private Author generateRandomAuthor(){
-        RandomString randomString = new RandomString(10);
-        Author author = new Author(randomString.nextString(),randomString.nextString());
-        return author;
+    @ModelAttribute("authors")
+    public List<Author> getAuthors(){
+        return authorDao.getAll();
     }
-
 
 }

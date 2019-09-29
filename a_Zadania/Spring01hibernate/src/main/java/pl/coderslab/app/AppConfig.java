@@ -3,6 +3,7 @@ package pl.coderslab.app;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import pl.coderslab.converters.AuthorConverter;
+import pl.coderslab.converters.PublisherConverter;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -43,6 +46,22 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     public void configureDefaultServletHandling(
             DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(getPublisherConverter());
+        registry.addConverter(getAuthorConverter());
+    }
+
+    @Bean
+    public PublisherConverter getPublisherConverter() {
+        return new PublisherConverter();
+    }
+
+    @Bean
+    public AuthorConverter getAuthorConverter() {
+        return new AuthorConverter();
     }
 
 }

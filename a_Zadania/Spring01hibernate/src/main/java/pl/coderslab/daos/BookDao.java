@@ -1,5 +1,6 @@
 package pl.coderslab.daos;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import pl.coderslab.entities.Book;
 
@@ -21,7 +22,10 @@ public class BookDao {
     }
 
     public Book findById(long id) {
-        return entityManager.find(Book.class, id);
+        Book book = entityManager.find(Book.class, id);
+        Hibernate.initialize(book.getPublisher());
+        Hibernate.initialize(book.getAuthors());
+        return book;
     }
 
     public void update(Book entity) {
@@ -35,7 +39,12 @@ public class BookDao {
 
     public List<Book> getAll() {
         Query query = entityManager.createQuery("SELECT b FROM Book b");
-        return query.getResultList();
+        List<Book> books = query.getResultList();
+        books.forEach(book -> {
+            Hibernate.initialize(book.getPublisher());
+            Hibernate.initialize(book.getAuthors());
+        });
+        return books;
     }
 
     public List<Book> getRatingList(int rating) {

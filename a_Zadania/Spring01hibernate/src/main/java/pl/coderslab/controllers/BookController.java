@@ -2,9 +2,8 @@ package pl.coderslab.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.daos.AuthorDao;
 import pl.coderslab.daos.BookDao;
 import pl.coderslab.daos.PublisherDao;
@@ -15,9 +14,11 @@ import pl.coderslab.utils.RandomString;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 @Controller
+@RequestMapping("/book")
 public class BookController {
 
     private BookDao bookDao;
@@ -33,39 +34,69 @@ public class BookController {
         this.authorDao = authorDao;
     }
 
-    @GetMapping("/create-book")
-    @ResponseBody
-    public String createBook(){
-        Book newBook = generateRandomBook();
-        bookDao.saveBook(newBook);
-        return newBook.toString();
+    @GetMapping("/create")
+    public String createBookForm(Model model){
+        Book book = new Book();
+        model.addAttribute("book",book);
+        return "bookForm";
     }
 
-    @GetMapping("/get-book/{id}")
-    @ResponseBody
-    public String getBook(@PathVariable String id){
-        Book book = bookDao.findById(Long.parseLong(id));
-        if(book!=null){
-            return book.toString();
-        }else {
-            return "Not found book with id "+id;
-        }
+    @PostMapping("/create")
+    public String createBook(@ModelAttribute Book book){
+        bookDao.saveBook(book);
+        return "redirect:/book/list";
     }
 
-    @GetMapping("/edit-book/{id}")
-    @ResponseBody
-    public String updateBook(@PathVariable String id){
-        Book book = bookDao.findById(Long.parseLong(id));
-        if(book!=null){
-            RandomString randomString = new RandomString(10);
-            book.setTitle(randomString.nextString());
-            book.setDescription(randomString.nextString());
-            bookDao.update(book);
-            return book.toString();
-        }else {
-            return "Not found book with id "+id;
-        }
+    @GetMapping("/list")
+    public String bookList(Model model){
+        return "bookList";
     }
+
+    @GetMapping("/edit/{id}")
+    public String editBook(@PathVariable int id,Model model){
+        Book book = bookDao.findById(id);
+        model.addAttribute("book",book);
+        return "bookForm";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateBook(@ModelAttribute Book book){
+        bookDao.update(book);
+        return "redirect:/book/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBookQuestion(@PathVariable int id, Model model){
+        Book book = bookDao.findById(id);
+        model.addAttribute("book",book);
+        return "confirmation";
+    }
+
+    @GetMapping("/delete/{id}/yes")
+    public String deleteBook(@PathVariable int id){
+        Book book = bookDao.findById(id);
+        if(book!=null) {
+            bookDao.delete(book);
+        }
+        return "redirect:/book/list";
+    }
+
+    @ModelAttribute("books")
+    public List<Book> getBooks(){
+        return bookDao.getAll();
+    }
+
+    @ModelAttribute("publishers")
+    public List<Publisher> getPublishers(){
+        return publisherDao.getAll();
+    }
+
+    @ModelAttribute("authorsList")
+    public List<Author> getAuthors(){
+        return authorDao.getAll();
+    }
+
+    /*******************************************/
 
     @GetMapping("/delete-book/{id}")
     @ResponseBody
@@ -79,23 +110,6 @@ public class BookController {
         }
     }
 
-    private Book generateRandomBook(){
-        Random random = new Random();
-        RandomString randomString = new RandomString(10,random);
 
-        Book book = new Book();
-
-        Publisher publisher = publisherDao.findById(1L);
-        book.setPublisher(publisher);
-
-        Author author = authorDao.findById(1L);
-        book.setAuthors(Collections.singletonList(author));
-
-        book.setDescription(randomString.nextString());
-        book.setPublisher(publisher);
-        book.setRating(random.nextInt(10));
-        book.setTitle(randomString.nextString());
-        return book;
-    }
 
 }

@@ -34,7 +34,7 @@ public class AuthorDao {
     }
 
     public List<Author> getAll() {
-        Query query = entityManager.createQuery("SELECT b FROM Book b");
+        Query query = entityManager.createQuery("SELECT b FROM Author b");
         return query.getResultList();
     }
 

@@ -13,9 +13,17 @@ public class Book {
     @ManyToMany
     private List<Author> authors;
     private int rating;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Publisher publisher;
     private String description;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public String getTitle() {
         return title;
