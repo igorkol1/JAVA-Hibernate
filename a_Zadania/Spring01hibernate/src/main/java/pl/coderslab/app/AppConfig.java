@@ -20,14 +20,14 @@ import javax.persistence.EntityManagerFactory;
 @EnableTransactionManagement
 public class AppConfig extends WebMvcConfigurerAdapter {
 
-//    @Bean
-//    public ViewResolver viewResolver() {
-//        InternalResourceViewResolver viewResolver =
-//                new InternalResourceViewResolver();
-//        viewResolver.setPrefix("/WEB-INF/views/");
-//        viewResolver.setSuffix(".jsp");
-//        return viewResolver;
-//    }
+    @Bean
+    public ViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver =
+                new InternalResourceViewResolver();
+        viewResolver.setPrefix("/WEB-INF/views/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
+    }
 
     @Bean
     public LocalEntityManagerFactoryBean entityManagerFactory() {

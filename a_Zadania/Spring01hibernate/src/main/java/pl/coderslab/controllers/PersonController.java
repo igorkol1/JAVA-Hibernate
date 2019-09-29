@@ -2,15 +2,15 @@ package pl.coderslab.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.daos.PersonDao;
 import pl.coderslab.daos.PersonDetailsDao;
 import pl.coderslab.entities.Person;
 import pl.coderslab.entities.PersonDetails;
-import pl.coderslab.utils.RandomString;
 
 @Controller
+@RequestMapping("/person")
 public class PersonController {
 
     private PersonDao personDao;
@@ -22,27 +22,20 @@ public class PersonController {
         this.personDetailsDao = personDetailsDao;
     }
 
-    @GetMapping("/create-person")
+    @GetMapping("/create")
+    public String createPersonFrom(Model model){
+        Person person = new Person();
+        model.addAttribute("person",person);
+        return "personForm";
+    }
+
+    @PostMapping("/create")
     @ResponseBody
-    public String createPerson(){
-        RandomString randomString = new RandomString(10);
-
-        PersonDetails personDetails = new PersonDetails(randomString.nextString(),
-                randomString.nextString(),
-                randomString.nextString(),
-                randomString.nextString(),
-                randomString.nextString()
-        );
-
+    public String createPerson(@ModelAttribute Person person){
+        PersonDetails personDetails = new PersonDetails();
         personDetailsDao.saveDetailsPerson(personDetails);
-
-        Person person = new Person(randomString.nextString(),
-                randomString.nextString(),
-                randomString.nextString(),
-                personDetails);
-
+        person.setPersonDetails(personDetails);
         personDao.savePerson(person);
-
-        return person.toString();
+        return "Person created: "+person.toString();
     }
 }
