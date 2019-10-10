@@ -23,12 +23,16 @@ List of books:
     <tr>
         <th>First name</th>
         <th>Last name</th>
+        <th>PESEL</th>
+        <th>E-mail</th>
         <th>Options</th>
     </tr>
     <c:forEach var="authorItem" items="${authors}">
         <tr>
             <td>${authorItem.getFirstName()}</td>
             <td>${authorItem.getLastName()}</td>
+            <td>${authorItem.getPesel()}</td>
+            <td>${authorItem.getEmail()}</td>
             <td>
                 <ul>
                     <li>

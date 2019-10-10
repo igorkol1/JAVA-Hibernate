@@ -1,6 +1,8 @@
 package pl.coderslab.entities;
 
-import org.springframework.lang.NonNull;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.pl.NIP;
+import org.hibernate.validator.constraints.pl.REGON;
 
 import javax.persistence.*;
 
@@ -12,8 +14,15 @@ public class Publisher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     @Column(nullable = false)
     private String name;
+
+    @REGON
+    private String regon;
+
+    @NIP
+    private String nip;
 
     public Publisher() {
     }
@@ -36,6 +45,22 @@ public class Publisher {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getRegon() {
+        return regon;
+    }
+
+    public void setRegon(String regon) {
+        this.regon = regon;
+    }
+
+    public String getNip() {
+        return nip;
+    }
+
+    public void setNip(String nip) {
+        this.nip = nip;
     }
 
     @Override

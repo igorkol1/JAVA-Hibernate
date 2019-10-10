@@ -26,6 +26,7 @@ List of books:
         <th>Rating</th>
         <th>Publisher</th>
         <th>Description</th>
+        <th>Pages</th>
         <th>Options</th>
     </tr>
     <c:forEach var="bookItem" items="${books}">
@@ -35,6 +36,7 @@ List of books:
             <td>${bookItem.getRating()}</td>
             <td>${bookItem.getPublisher()}</td>
             <td>${bookItem.getDescription()}</td>
+            <td>${bookItem.getPages()}</td>
             <td>
                 <ul>
                     <li>

@@ -17,6 +17,8 @@ Create new author
            modelAttribute="author">
     First name: <form:input path="firstName" /><br>
     Last name: <form:input path="lastName" /><br>
+    PESEL: <form:input path="pesel" /><br>
+    E-mail: <form:input path="email" /><br>
     <input type="submit" value="Save">
 </form:form>
 </body>

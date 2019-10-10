@@ -21,6 +21,7 @@ Create new book
     Publisher: <form:select path="publisher" items="${publishers}"
                             itemValue="id" itemLabel="name"/><br>
     Description: <form:textarea path="description" /><br>
+    Pages: <form:input path="pages" /><br>
     <input type="submit" value="Save">
 </form:form>
 </body>

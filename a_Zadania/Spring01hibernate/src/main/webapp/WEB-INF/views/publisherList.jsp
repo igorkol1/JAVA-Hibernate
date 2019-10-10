@@ -22,11 +22,15 @@ List of publishers:
 <table border="1">
     <tr>
         <th>Name</th>
+        <th>NIP</th>
+        <th>REGON</th>
         <th>Options</th>
     </tr>
     <c:forEach var="publisherItem" items="${publishers}">
         <tr>
             <td>${publisherItem.getName()}</td>
+            <td>${publisherItem.getRegon()}</td>
+            <td>${publisherItem.getNip()}</td>
             <td>
                 <ul>
                     <li>

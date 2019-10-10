@@ -1,21 +1,53 @@
 package pl.coderslab.entities;
 
-import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import java.util.List;
 
 @Entity
 @Table(name = "books")
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(min = 5)
     private String title;
+
     @ManyToMany
+    @NotEmpty
     private List<Author> authors;
+
+    @Max(10)
+    @Min(0)
     private int rating;
+
     @ManyToOne(cascade = CascadeType.MERGE)
+    @NotNull
     private Publisher publisher;
+
+    @NotBlank
+    @Size(max = 600)
     private String description;
+
+    @Min(1)
+    private int pages;
 
     public void setId(Long id) {
         this.id = id;
@@ -65,6 +97,14 @@ public class Book {
         this.description = description;
     }
 
+    public int getPages() {
+        return pages;
+    }
+
+    public void setPages(int pages) {
+        this.pages = pages;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -74,6 +114,7 @@ public class Book {
                 ", rating=" + rating +
                 ", publisher=" + publisher +
                 ", description='" + description + '\'' +
+                ", pages=" + pages +
                 '}';
     }
 }
