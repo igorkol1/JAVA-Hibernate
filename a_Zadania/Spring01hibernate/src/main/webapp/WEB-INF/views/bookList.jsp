@@ -14,6 +14,7 @@
 <header>
     <ul>
         <li><a href="create">Create new book</a></li>
+        <li><a href="../proposition/list">Propositions</a></li>
         <li><a href="../authors/list">Authors</a></li>
         <li><a href="../publisher/list">Publishers</a></li>
     </ul>

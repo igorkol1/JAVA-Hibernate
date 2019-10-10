@@ -2,6 +2,8 @@ package pl.coderslab.entities;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
+import pl.coderslab.validators.BookValidationGroup;
+import pl.coderslab.validators.PropositionValidationGroup;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -26,28 +28,30 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 5)
+    @NotBlank(groups = {PropositionValidationGroup.class, BookValidationGroup.class})
+    @Size(min = 5, groups = {PropositionValidationGroup.class, BookValidationGroup.class})
     private String title;
 
     @ManyToMany
-    @NotEmpty
+    @NotEmpty(groups = {BookValidationGroup.class})
     private List<Author> authors;
 
-    @Max(10)
-    @Min(0)
+    @Min(value = 1, groups = {BookValidationGroup.class})
+    @Max(value = 10, groups = {BookValidationGroup.class})
     private int rating;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @NotNull
+    @NotNull(groups = {BookValidationGroup.class})
     private Publisher publisher;
 
-    @NotBlank
-    @Size(max = 600)
+    @NotBlank(groups = {PropositionValidationGroup.class, BookValidationGroup.class})
+    @Size(min = 1, max = 600, groups = {PropositionValidationGroup.class, BookValidationGroup.class})
     private String description;
 
-    @Min(1)
+    @Min(value = 1, groups = {BookValidationGroup.class})
     private int pages;
+
+    private boolean proposition;
 
     public void setId(Long id) {
         this.id = id;
@@ -103,6 +107,14 @@ public class Book {
 
     public void setPages(int pages) {
         this.pages = pages;
+    }
+
+    public boolean isProposition() {
+        return proposition;
+    }
+
+    public void setProposition(boolean proposition) {
+        this.proposition = proposition;
     }
 
     @Override

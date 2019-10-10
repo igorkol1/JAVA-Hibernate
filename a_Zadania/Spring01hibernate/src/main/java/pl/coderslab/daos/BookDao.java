@@ -37,8 +37,18 @@ public class BookDao {
                 entity : entityManager.merge(entity));
     }
 
-    public List<Book> getAll() {
-        Query query = entityManager.createQuery("SELECT b FROM Book b");
+    public List<Book> getAllBooks() {
+        Query query = entityManager.createQuery("SELECT b FROM Book b where b.proposition=false");
+        List<Book> books = query.getResultList();
+        books.forEach(book -> {
+            Hibernate.initialize(book.getPublisher());
+            Hibernate.initialize(book.getAuthors());
+        });
+        return books;
+    }
+
+    public List<Book> getAllBookPropositions(){
+        Query query = entityManager.createQuery("SELECT b FROM Book b where b.proposition=true ");
         List<Book> books = query.getResultList();
         books.forEach(book -> {
             Hibernate.initialize(book.getPublisher());

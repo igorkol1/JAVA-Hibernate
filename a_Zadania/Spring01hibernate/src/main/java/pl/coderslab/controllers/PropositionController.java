@@ -12,26 +12,31 @@ import pl.coderslab.daos.PublisherDao;
 import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Book;
 import pl.coderslab.entities.Publisher;
-import pl.coderslab.validators.BookValidationGroup;
+import pl.coderslab.validators.PropositionValidationGroup;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-@RequestMapping("/book")
-public class BookController {
+@RequestMapping("/proposition")
+public class PropositionController {
 
     private BookDao bookDao;
     private PublisherDao publisherDao;
     private AuthorDao authorDao;
 
     @Autowired
-    public BookController(BookDao bookDao,
-                          PublisherDao publisherDao,
-                          AuthorDao authorDao) {
+    public PropositionController(BookDao bookDao,
+                                 PublisherDao publisherDao,
+                                 AuthorDao authorDao) {
         this.bookDao = bookDao;
         this.publisherDao = publisherDao;
         this.authorDao = authorDao;
+    }
+
+    @GetMapping("/list")
+    public String bookList(Model model){
+        return "propositionsList";
     }
 
     @GetMapping("/create")
@@ -42,31 +47,27 @@ public class BookController {
     }
 
     @PostMapping("/create")
-    public String createBook(@ModelAttribute @Validated({BookValidationGroup.class}) Book book, BindingResult result){
+    public String createBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book, BindingResult result){
         if(result.hasErrors()){
             return "bookForm";
         }
-        book.setProposition(false);
+        book.setProposition(true);
         bookDao.saveBook(book);
-        return "redirect:/book/list";
-    }
-
-    @GetMapping("/list")
-    public String bookList(Model model){
-        return "bookList";
+        return "redirect:/proposition/list";
     }
 
     @GetMapping("/edit/{id}")
-    public String editBook(@PathVariable int id,Model model){
+    public String editBook(@PathVariable int id, Model model){
         Book book = bookDao.findById(id);
         model.addAttribute("book",book);
         return "bookForm";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateBook(@ModelAttribute @Validated({BookValidationGroup.class}) Book book){
+    public String updateBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book){
+        book.setProposition(true);
         bookDao.update(book);
-        return "redirect:/book/list";
+        return "redirect:/proposition/list";
     }
 
     @GetMapping("/delete/{id}")
@@ -82,12 +83,12 @@ public class BookController {
         if(book!=null) {
             bookDao.delete(book);
         }
-        return "redirect:/book/list";
+        return "redirect:/proposition/list";
     }
 
-    @ModelAttribute("books")
-    public List<Book> getBooks(){
-        return bookDao.getAllBooks();
+    @ModelAttribute("propositions")
+    public List<Book> getBookPropositions(){
+        return bookDao.getAllBookPropositions();
     }
 
     @ModelAttribute("publishers")
@@ -99,21 +100,5 @@ public class BookController {
     public List<Author> getAuthors(){
         return authorDao.getAll();
     }
-
-    /*******************************************/
-
-    @GetMapping("/delete-book/{id}")
-    @ResponseBody
-    public String deleteBook(@PathVariable String id){
-        Book book = bookDao.findById(Long.parseLong(id));
-        if(book!=null){
-            bookDao.delete(book);
-            return "Book deleted";
-        }else {
-            return "Not found book with id "+id;
-        }
-    }
-
-
 
 }
