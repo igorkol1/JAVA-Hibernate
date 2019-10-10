@@ -3,6 +3,7 @@ package pl.coderslab.entities;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.pl.PESEL;
+import pl.coderslab.validators.Adult;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,6 +27,9 @@ public class Author {
 
     @Email
     private String email;
+
+    @Adult
+    private int yearOfBirth;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "authors")
     private List<Book> books;
@@ -76,6 +80,14 @@ public class Author {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getYearOfBirth() {
+        return yearOfBirth;
+    }
+
+    public void setYearOfBirth(int yearOfBirth) {
+        this.yearOfBirth = yearOfBirth;
     }
 
     @Override

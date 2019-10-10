@@ -16,9 +16,15 @@ Create new author
 <form:form method="post"
            modelAttribute="author">
     First name: <form:input path="firstName" /><br>
+    <form:errors path="firstName" /><br>
     Last name: <form:input path="lastName" /><br>
+    <form:errors path="lastName" /><br>
     PESEL: <form:input path="pesel" /><br>
+    <form:errors path="pesel" /><br>
     E-mail: <form:input path="email" /><br>
+    <form:errors path="email" /><br>
+    Year of Birth: <form:input path="yearOfBirth" /><br>
+    <form:errors path="yearOfBirth" /><br>
     <input type="submit" value="Save">
 </form:form>
 </body>

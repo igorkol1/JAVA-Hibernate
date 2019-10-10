@@ -3,11 +3,13 @@ package pl.coderslab.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.daos.AuthorDao;
 import pl.coderslab.entities.Author;
 import pl.coderslab.utils.RandomString;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -29,7 +31,10 @@ public class AuthorController {
     }
 
     @PostMapping("/create")
-    public String createAuthor(@ModelAttribute Author author){
+    public String createAuthor(@ModelAttribute @Valid Author author, BindingResult result){
+        if(result.hasErrors()){
+            return "authorForm";
+        }
         authorDao.saveAuthor(author);
         return "redirect:/authors/list";
     }
@@ -47,7 +52,10 @@ public class AuthorController {
     }
 
     @PostMapping("/edit/{id}")
-    public String editAuthor(@ModelAttribute Author author){
+    public String editAuthor(@ModelAttribute @Valid Author author,BindingResult result){
+        if(result.hasErrors()){
+            return "authorForm";
+        }
         authorDao.update(author);
         return "redirect:/authors/list";
     }

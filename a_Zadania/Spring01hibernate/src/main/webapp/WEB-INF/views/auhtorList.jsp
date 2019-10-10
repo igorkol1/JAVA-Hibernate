@@ -25,6 +25,7 @@ List of books:
         <th>Last name</th>
         <th>PESEL</th>
         <th>E-mail</th>
+        <th>Year of Birth</th>
         <th>Options</th>
     </tr>
     <c:forEach var="authorItem" items="${authors}">
@@ -33,6 +34,7 @@ List of books:
             <td>${authorItem.getLastName()}</td>
             <td>${authorItem.getPesel()}</td>
             <td>${authorItem.getEmail()}</td>
+            <td>${authorItem.getYearOfBirth()}</td>
             <td>
                 <ul>
                     <li>

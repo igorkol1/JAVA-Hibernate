@@ -16,8 +16,11 @@ Create new author
 <form:form method="post"
            modelAttribute="publisher">
     Name: <form:input path="name" /><br>
+    <form:errors path="name" /><br>
     NIP: <form:input path="nip" /><br>
+    <form:errors path="nip" /><br>
     REGON: <form:input path="regon" /><br>
+    <form:errors path="regon" /><br>
     <input type="submit" value="Save">
 </form:form>
 </body>
