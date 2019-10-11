@@ -5,14 +5,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import pl.coderslab.validators.BookValidationGroup;
 import pl.coderslab.validators.PropositionValidationGroup;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -32,7 +25,7 @@ public class Book {
     @Size(min = 5, groups = {PropositionValidationGroup.class, BookValidationGroup.class})
     private String title;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @NotEmpty(groups = {BookValidationGroup.class})
     private List<Author> authors;
 
@@ -40,7 +33,7 @@ public class Book {
     @Max(value = 10, groups = {BookValidationGroup.class})
     private int rating;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @NotNull(groups = {BookValidationGroup.class})
     private Publisher publisher;
 
@@ -50,6 +43,9 @@ public class Book {
 
     @Min(value = 1, groups = {BookValidationGroup.class})
     private int pages;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Category category;
 
     private boolean proposition;
 
