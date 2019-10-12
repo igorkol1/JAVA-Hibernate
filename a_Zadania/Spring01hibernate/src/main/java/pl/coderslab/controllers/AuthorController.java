@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import pl.coderslab.daos.AuthorDao;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.coderslab.entities.Author;
-import pl.coderslab.utils.RandomString;
+import pl.coderslab.repositories.AuthorRepository;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,11 +19,11 @@ import java.util.List;
 @RequestMapping("/authors")
 public class AuthorController {
 
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
 
     @Autowired
-    public AuthorController(AuthorDao authorDao) {
-        this.authorDao = authorDao;
+    public AuthorController(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
     }
 
     @GetMapping("/create")
@@ -35,7 +38,7 @@ public class AuthorController {
         if(result.hasErrors()){
             return "authorForm";
         }
-        authorDao.saveAuthor(author);
+        authorRepository.save(author);
         return "redirect:/authors/list";
     }
 
@@ -46,7 +49,7 @@ public class AuthorController {
 
     @GetMapping("/edit/{id}")
     public String editAuthorForm(@PathVariable int id,Model model){
-        Author author = authorDao.findById(id);
+        Author author = authorRepository.findOne(Long.valueOf(id));
         model.addAttribute("author",author);
         return "authorForm";
     }
@@ -56,29 +59,29 @@ public class AuthorController {
         if(result.hasErrors()){
             return "authorForm";
         }
-        authorDao.update(author);
+        authorRepository.save(author);
         return "redirect:/authors/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteAuthorQuestion(@PathVariable int id, Model model){
-        Author author = authorDao.findById(id);
+        Author author = authorRepository.findOne(Long.valueOf(id));
         model.addAttribute("author",author);
         return "confirmationAuthor";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Author author = authorDao.findById(id);
+        Author author = authorRepository.findOne(Long.valueOf(id));
         if(author!=null) {
-            authorDao.delete(author);
+            authorRepository.delete(author);
         }
         return "redirect:/authors/list";
     }
 
     @ModelAttribute("authors")
     public List<Author> getAuthors(){
-        return authorDao.getAll();
+        return authorRepository.findAll();
     }
 
 }

@@ -5,33 +5,37 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import pl.coderslab.daos.AuthorDao;
-import pl.coderslab.daos.BookDao;
-import pl.coderslab.daos.PublisherDao;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Book;
 import pl.coderslab.entities.Publisher;
+import pl.coderslab.repositories.AuthorRepository;
+import pl.coderslab.repositories.BookRepository;
+import pl.coderslab.repositories.PublisherRepository;
 import pl.coderslab.validators.BookValidationGroup;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
 @RequestMapping("/book")
 public class BookController {
 
-    private BookDao bookDao;
-    private PublisherDao publisherDao;
-    private AuthorDao authorDao;
+    private PublisherRepository publisherRepository;
+    private AuthorRepository authorRepository;
+
+    private BookRepository bookRepository;
 
     @Autowired
-    public BookController(BookDao bookDao,
-                          PublisherDao publisherDao,
-                          AuthorDao authorDao) {
-        this.bookDao = bookDao;
-        this.publisherDao = publisherDao;
-        this.authorDao = authorDao;
+    public BookController(PublisherRepository publisherRepository,
+                          AuthorRepository authorRepository,
+                          BookRepository bookRepository) {
+        this.publisherRepository = publisherRepository;
+        this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/create")
@@ -47,7 +51,7 @@ public class BookController {
             return "bookForm";
         }
         book.setProposition(false);
-        bookDao.saveBook(book);
+        bookRepository.save(book);
         return "redirect:/book/list";
     }
 
@@ -58,62 +62,46 @@ public class BookController {
 
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id,Model model){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         model.addAttribute("book",book);
         return "bookForm";
     }
 
     @PostMapping("/edit/{id}")
     public String updateBook(@ModelAttribute @Validated({BookValidationGroup.class}) Book book){
-        bookDao.update(book);
+        bookRepository.save(book);
         return "redirect:/book/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteBookQuestion(@PathVariable int id, Model model){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         model.addAttribute("book",book);
         return "confirmation";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         if(book!=null) {
-            bookDao.delete(book);
+            bookRepository.delete(book);
         }
         return "redirect:/book/list";
     }
 
     @ModelAttribute("books")
     public List<Book> getBooks(){
-        return bookDao.getAllBooks();
+        return bookRepository.findAllByPropositionFalse();
     }
 
     @ModelAttribute("publishers")
     public List<Publisher> getPublishers(){
-        return publisherDao.getAll();
+        return publisherRepository.findAll();
     }
 
     @ModelAttribute("authorsList")
     public List<Author> getAuthors(){
-        return authorDao.getAll();
+        return authorRepository.findAll();
     }
-
-    /*******************************************/
-
-    @GetMapping("/delete-book/{id}")
-    @ResponseBody
-    public String deleteBook(@PathVariable String id){
-        Book book = bookDao.findById(Long.parseLong(id));
-        if(book!=null){
-            bookDao.delete(book);
-            return "Book deleted";
-        }else {
-            return "Not found book with id "+id;
-        }
-    }
-
-
 
 }

@@ -5,33 +5,36 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import pl.coderslab.daos.AuthorDao;
-import pl.coderslab.daos.BookDao;
-import pl.coderslab.daos.PublisherDao;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Book;
 import pl.coderslab.entities.Publisher;
+import pl.coderslab.repositories.AuthorRepository;
+import pl.coderslab.repositories.BookRepository;
+import pl.coderslab.repositories.PublisherRepository;
 import pl.coderslab.validators.PropositionValidationGroup;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
 @RequestMapping("/proposition")
 public class PropositionController {
 
-    private BookDao bookDao;
-    private PublisherDao publisherDao;
-    private AuthorDao authorDao;
+    private BookRepository bookRepository;
+    private PublisherRepository publisherRepository;
+    private AuthorRepository authorRepository;
 
     @Autowired
-    public PropositionController(BookDao bookDao,
-                                 PublisherDao publisherDao,
-                                 AuthorDao authorDao) {
-        this.bookDao = bookDao;
-        this.publisherDao = publisherDao;
-        this.authorDao = authorDao;
+    public PropositionController(BookRepository bookRepository,
+                                 PublisherRepository publisherRepository,
+                                 AuthorRepository authorRepository) {
+        this.bookRepository = bookRepository;
+        this.publisherRepository = publisherRepository;
+        this.authorRepository = authorRepository;
     }
 
     @GetMapping("/list")
@@ -52,13 +55,13 @@ public class PropositionController {
             return "bookForm";
         }
         book.setProposition(true);
-        bookDao.saveBook(book);
+        bookRepository.save(book);
         return "redirect:/proposition/list";
     }
 
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id, Model model){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         model.addAttribute("book",book);
         return "bookForm";
     }
@@ -66,39 +69,39 @@ public class PropositionController {
     @PostMapping("/edit/{id}")
     public String updateBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book){
         book.setProposition(true);
-        bookDao.update(book);
+        bookRepository.save(book);
         return "redirect:/proposition/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteBookQuestion(@PathVariable int id, Model model){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         model.addAttribute("book",book);
         return "confirmation";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findOne(Long.valueOf(id));
         if(book!=null) {
-            bookDao.delete(book);
+            bookRepository.delete(book);
         }
         return "redirect:/proposition/list";
     }
 
     @ModelAttribute("propositions")
     public List<Book> getBookPropositions(){
-        return bookDao.getAllBookPropositions();
+        return bookRepository.findAllByPropositionTrue();
     }
 
     @ModelAttribute("publishers")
     public List<Publisher> getPublishers(){
-        return publisherDao.getAll();
+        return publisherRepository.findAll();
     }
 
     @ModelAttribute("authorsList")
     public List<Author> getAuthors(){
-        return authorDao.getAll();
+        return authorRepository.findAll();
     }
 
 }

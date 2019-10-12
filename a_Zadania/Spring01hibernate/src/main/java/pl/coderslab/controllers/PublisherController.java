@@ -9,11 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import pl.coderslab.daos.PublisherDao;
-import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Publisher;
-import pl.coderslab.utils.RandomString;
+import pl.coderslab.repositories.PublisherRepository;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,11 +19,11 @@ import java.util.List;
 @RequestMapping("/publisher")
 public class PublisherController {
 
-    private PublisherDao publisherDao;
+    private PublisherRepository publisherRepository;
 
     @Autowired
-    public PublisherController(PublisherDao publisherDao) {
-        this.publisherDao = publisherDao;
+    public PublisherController(PublisherRepository publisherRepository) {
+        this.publisherRepository = publisherRepository;
     }
 
     @GetMapping("/list")
@@ -46,13 +43,13 @@ public class PublisherController {
         if(result.hasErrors()){
             return "publisherForm";
         }
-        publisherDao.savePublisher(publisher);
+        publisherRepository.save(publisher);
         return "redirect:/publisher/list";
     }
 
     @GetMapping("/edit/{id}")
     public String editAuthorForm(@PathVariable int id,Model model){
-        Publisher publisher = publisherDao.findById(id);
+        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
         model.addAttribute("publisher",publisher);
         return "publisherForm";
     }
@@ -62,22 +59,22 @@ public class PublisherController {
         if(result.hasErrors()){
             return "publisherForm";
         }
-        publisherDao.update(publisher);
+        publisherRepository.save(publisher);
         return "redirect:/publisher/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deletePublisherQuestion(@PathVariable int id, Model model){
-        Publisher publisher = publisherDao.findById(id);
+        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
         model.addAttribute("publisher",publisher);
         return "confirmationPublisher";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Publisher publisher = publisherDao.findById(id);
+        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
         if(publisher!=null) {
-            publisherDao.delete(publisher);
+            publisherRepository.delete(publisher);
         }
         return "redirect:/publisher/list";
     }
@@ -85,7 +82,7 @@ public class PublisherController {
 
     @ModelAttribute("publishers")
     public List<Publisher> getAuthors(){
-        return publisherDao.getAll();
+        return publisherRepository.findAll();
     }
 
 }
