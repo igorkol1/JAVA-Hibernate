@@ -19,6 +19,7 @@ import pl.coderslab.repositories.PublisherRepository;
 import pl.coderslab.validators.BookValidationGroup;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/book")
@@ -62,7 +63,7 @@ public class BookController {
 
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id,Model model){
-        Book book = bookRepository.findOne(Long.valueOf(id));
+        Book book = bookRepository.findById((long) id).get();
         model.addAttribute("book",book);
         return "bookForm";
     }
@@ -75,17 +76,15 @@ public class BookController {
 
     @GetMapping("/delete/{id}")
     public String deleteBookQuestion(@PathVariable int id, Model model){
-        Book book = bookRepository.findOne(Long.valueOf(id));
+        Book book = bookRepository.findById((long) id).get();
         model.addAttribute("book",book);
         return "confirmation";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Book book = bookRepository.findOne(Long.valueOf(id));
-        if(book!=null) {
-            bookRepository.delete(book);
-        }
+        Optional<Book> bookOptional = bookRepository.findById((long) id);
+        bookOptional.ifPresent(book -> bookRepository.delete(book));
         return "redirect:/book/list";
     }
 

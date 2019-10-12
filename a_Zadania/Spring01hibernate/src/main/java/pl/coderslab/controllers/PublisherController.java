@@ -14,6 +14,7 @@ import pl.coderslab.repositories.PublisherRepository;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/publisher")
@@ -49,7 +50,7 @@ public class PublisherController {
 
     @GetMapping("/edit/{id}")
     public String editAuthorForm(@PathVariable int id,Model model){
-        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
+        Publisher publisher = publisherRepository.findById((long) id).get();
         model.addAttribute("publisher",publisher);
         return "publisherForm";
     }
@@ -65,17 +66,15 @@ public class PublisherController {
 
     @GetMapping("/delete/{id}")
     public String deletePublisherQuestion(@PathVariable int id, Model model){
-        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
+        Publisher publisher = publisherRepository.findById((long) id).get();
         model.addAttribute("publisher",publisher);
         return "confirmationPublisher";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Publisher publisher = publisherRepository.findOne(Long.valueOf(id));
-        if(publisher!=null) {
-            publisherRepository.delete(publisher);
-        }
+        Optional<Publisher> publisherOptional = publisherRepository.findById((long) id);
+        publisherOptional.ifPresent(publisher -> publisherRepository.delete(publisher));
         return "redirect:/publisher/list";
     }
 

@@ -19,6 +19,7 @@ import pl.coderslab.repositories.PublisherRepository;
 import pl.coderslab.validators.PropositionValidationGroup;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/proposition")
@@ -38,20 +39,20 @@ public class PropositionController {
     }
 
     @GetMapping("/list")
-    public String bookList(Model model){
+    public String bookList(Model model) {
         return "propositionsList";
     }
 
     @GetMapping("/create")
-    public String createBookForm(Model model){
+    public String createBookForm(Model model) {
         Book book = new Book();
-        model.addAttribute("book",book);
+        model.addAttribute("book", book);
         return "bookForm";
     }
 
     @PostMapping("/create")
-    public String createBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book, BindingResult result){
-        if(result.hasErrors()){
+    public String createBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book, BindingResult result) {
+        if (result.hasErrors()) {
             return "bookForm";
         }
         book.setProposition(true);
@@ -60,47 +61,45 @@ public class PropositionController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editBook(@PathVariable int id, Model model){
-        Book book = bookRepository.findOne(Long.valueOf(id));
-        model.addAttribute("book",book);
+    public String editBook(@PathVariable int id, Model model) {
+        Book book = bookRepository.findById((long) id).get();
+        model.addAttribute("book", book);
         return "bookForm";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book){
+    public String updateBook(@ModelAttribute @Validated({PropositionValidationGroup.class}) Book book) {
         book.setProposition(true);
         bookRepository.save(book);
         return "redirect:/proposition/list";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBookQuestion(@PathVariable int id, Model model){
-        Book book = bookRepository.findOne(Long.valueOf(id));
-        model.addAttribute("book",book);
+    public String deleteBookQuestion(@PathVariable int id, Model model) {
+        Book book = bookRepository.findById((long) id).get();
+        model.addAttribute("book", book);
         return "confirmation";
     }
 
     @GetMapping("/delete/{id}/yes")
-    public String deleteBook(@PathVariable int id){
-        Book book = bookRepository.findOne(Long.valueOf(id));
-        if(book!=null) {
-            bookRepository.delete(book);
-        }
+    public String deleteBook(@PathVariable int id) {
+        Optional<Book> bookOptional = bookRepository.findById((long) id);
+        bookOptional.ifPresent(book -> bookRepository.delete(book));
         return "redirect:/proposition/list";
     }
 
     @ModelAttribute("propositions")
-    public List<Book> getBookPropositions(){
+    public List<Book> getBookPropositions() {
         return bookRepository.findAllByPropositionTrue();
     }
 
     @ModelAttribute("publishers")
-    public List<Publisher> getPublishers(){
+    public List<Publisher> getPublishers() {
         return publisherRepository.findAll();
     }
 
     @ModelAttribute("authorsList")
-    public List<Author> getAuthors(){
+    public List<Author> getAuthors() {
         return authorRepository.findAll();
     }
 

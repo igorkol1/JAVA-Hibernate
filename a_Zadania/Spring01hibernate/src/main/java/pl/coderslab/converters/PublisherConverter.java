@@ -13,6 +13,6 @@ public class PublisherConverter implements Converter<String, Publisher> {
 
     @Override
     public Publisher convert(String s) {
-        return this.publisherRepository.findOne(Long.parseLong(s));
+        return this.publisherRepository.findById(Long.parseLong(s)).get();
     }
 }

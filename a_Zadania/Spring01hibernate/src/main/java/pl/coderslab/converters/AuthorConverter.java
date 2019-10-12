@@ -13,6 +13,6 @@ public class AuthorConverter implements Converter<String, Author> {
 
     @Override
     public Author convert(String s) {
-        return this.authorRepository.findOne(Long.parseLong(s));
+        return this.authorRepository.findById(Long.parseLong(s)).get();
     }
 }

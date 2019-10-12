@@ -14,6 +14,7 @@ import pl.coderslab.repositories.AuthorRepository;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/authors")
@@ -49,7 +50,7 @@ public class AuthorController {
 
     @GetMapping("/edit/{id}")
     public String editAuthorForm(@PathVariable int id,Model model){
-        Author author = authorRepository.findOne(Long.valueOf(id));
+        Author author = authorRepository.findById((long) id).get();
         model.addAttribute("author",author);
         return "authorForm";
     }
@@ -65,17 +66,15 @@ public class AuthorController {
 
     @GetMapping("/delete/{id}")
     public String deleteAuthorQuestion(@PathVariable int id, Model model){
-        Author author = authorRepository.findOne(Long.valueOf(id));
+        Author author = authorRepository.findById((long) id).get();
         model.addAttribute("author",author);
         return "confirmationAuthor";
     }
 
     @GetMapping("/delete/{id}/yes")
     public String deleteBook(@PathVariable int id){
-        Author author = authorRepository.findOne(Long.valueOf(id));
-        if(author!=null) {
-            authorRepository.delete(author);
-        }
+        Optional<Author> authorOptional = authorRepository.findById((long) id);
+        authorOptional.ifPresent(author -> authorRepository.delete(author));
         return "redirect:/authors/list";
     }
 
