@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import pl.coderslab.daos.AuthorDao;
 import pl.coderslab.entities.Author;
+import pl.coderslab.repositories.AuthorRepository;
 
 public class AuthorConverter implements Converter<String, Author> {
 
     @Autowired
-    AuthorDao authorDao;
+    AuthorRepository authorRepository;
 
     @Override
     public Author convert(String s) {
-        return this.authorDao.findById(Long.parseLong(s));
+        return this.authorRepository.findOne(Long.parseLong(s));
     }
 }

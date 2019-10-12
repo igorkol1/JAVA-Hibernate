@@ -5,34 +5,36 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import pl.coderslab.daos.AuthorDao;
-import pl.coderslab.daos.BookDao;
-import pl.coderslab.daos.PublisherDao;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.coderslab.entities.Author;
 import pl.coderslab.entities.Book;
 import pl.coderslab.entities.Publisher;
+import pl.coderslab.repositories.AuthorRepository;
 import pl.coderslab.repositories.BookRepository;
+import pl.coderslab.repositories.PublisherRepository;
 import pl.coderslab.validators.BookValidationGroup;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
 @RequestMapping("/book")
 public class BookController {
 
-    private PublisherDao publisherDao;
-    private AuthorDao authorDao;
+    private PublisherRepository publisherRepository;
+    private AuthorRepository authorRepository;
 
     private BookRepository bookRepository;
 
     @Autowired
-    public BookController(PublisherDao publisherDao,
-                          AuthorDao authorDao,
+    public BookController(PublisherRepository publisherRepository,
+                          AuthorRepository authorRepository,
                           BookRepository bookRepository) {
-        this.publisherDao = publisherDao;
-        this.authorDao = authorDao;
+        this.publisherRepository = publisherRepository;
+        this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
     }
 
@@ -94,12 +96,12 @@ public class BookController {
 
     @ModelAttribute("publishers")
     public List<Publisher> getPublishers(){
-        return publisherDao.getAll();
+        return publisherRepository.findAll();
     }
 
     @ModelAttribute("authorsList")
     public List<Author> getAuthors(){
-        return authorDao.getAll();
+        return authorRepository.findAll();
     }
 
 }

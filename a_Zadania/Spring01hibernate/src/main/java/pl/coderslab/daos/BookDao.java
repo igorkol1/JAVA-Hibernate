@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
 
+@Deprecated
 @Repository
 @Transactional
 public class BookDao {
