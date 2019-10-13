@@ -31,6 +31,17 @@ public class Article {
 
     private LocalDateTime updated;
 
+
+    @PrePersist
+    public void prePersist() {
+        created = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updated = LocalDateTime.now();
+    }
+
     public String getTitle() {
         return title;
     }

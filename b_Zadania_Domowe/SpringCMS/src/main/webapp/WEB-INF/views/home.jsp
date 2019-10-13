@@ -11,6 +11,13 @@
     <title>CMS Home</title>
 </head>
 <body>
+<header>
+    <ul>
+        <li><a href="category/list">Categories</a> </li>
+        <li><a href="author/list">Authors</a> </li>
+    </ul>
+</header>
+
 Last articles:
 <table border="1">
     <tr>
